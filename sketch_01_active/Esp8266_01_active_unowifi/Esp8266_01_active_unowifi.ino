@@ -69,7 +69,7 @@ void loop() {
   WiFiClient client;
   
   if (!client.connect(server_address, server_port)) {
-    Serial.println("connection failed");
+  //  Serial.println("connection failed");
     return;
   }
 
@@ -80,13 +80,13 @@ void loop() {
                "Content-Length:" + msg.length() + "\r\n" +
                "Connection: close\r\n\r\n" + msg + "\r\n\r\n");
   
-
+ 
   
   // Send the response to the client
 
   delay(1);
   client.stop();
-  Serial.println("connection sucessfull");
+ // Serial.println("connection sucessfull");
     
   }
     
