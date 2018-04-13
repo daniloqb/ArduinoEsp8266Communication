@@ -1,3 +1,16 @@
+/* 2018-04-12
+ * Danilo Queiroz Barbosa
+ * electronicdrops.com member
+ * 
+ * This sketch is a simple example how to send data over a period of time throught serial
+ * Was designed to be used together a ESP8266. The data is send to esp82 throught serial
+ * and ESP8266 relay the data to a server.
+ * 
+ * This first part send a raw data.
+ */
+
+
+
 
 #define DEBUG 1
 #define USE_SOFTWARE_SERIAL 0
@@ -75,6 +88,7 @@ void loop() {
  */
 
  val = analogRead(A0);
+ 
 
  /*
   * PARTE 03 -- ENVIANDO DADOS PARA A SOFTWARESERIAL
