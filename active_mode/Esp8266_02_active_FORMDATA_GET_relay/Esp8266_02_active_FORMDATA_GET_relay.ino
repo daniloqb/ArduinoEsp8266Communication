@@ -1,18 +1,30 @@
-#include <WiFiClient.h>
-#include <WiFiManager.h> 
+
+/* 2018-04-15
+ * Danilo Queiroz Barbosa
+ * electronicdrops.com member
+ * 
+ * This sketch is a simple example how to send data via POST or GET html variables.
+ * 
+ * The data came from Serial and esp8266 relays the data to the server. The response is send back to Serial.
+ * 
+  */
+
+
+#include <WiFiManager.h>
+#include <ESP8266HTTPClient.h>
+ 
 
 #define DEBUG  1
 
 const char * server_address = "192.168.0.106";
-const int    server_port    = 2121;
-const char * server_url     = "/api/v1/monitor";
-
+const int    server_port    = 80;
+const char * server_uri     = "/receive.php";
 
 
 void setup() {
 
 
-  Serial.setRxBufferSize(1024);
+
   Serial.begin(9600);
 
   //WiFiManager
@@ -46,6 +58,8 @@ void loop() {
 
   char c;
   String msg;
+  HTTPClient http;
+
 
 /*
  *  PARTE 01 - VERIFICA SE EXISTEM DADOS A SEREM ENVIADOS
@@ -65,40 +79,38 @@ void loop() {
      delay(2);
   }
 
+  
+
   /*
    * PARTE 03 - CRIA CONEXAO COM O SERVIDOR
    */
 
-  WiFiClient client;
+  String uri_data = server_uri;
+  uri_data += "?" + msg;
+
+
+     http.begin(server_address, server_port, uri_data);
+    // http.addHeader("Content-Type","application/x-www-form-urlencoded");
+     int httpCode = http.GET();
+
+
+     if(httpCode > 0) {
+      if(httpCode == HTTP_CODE_OK) {
+        String payload = http.getString();
+        //Serial.println("connection sucessful");
+        Serial.println(payload);
+      } else{
+        #if DEBUG == 1
+          Serial.println("connection fault");
+        #endif
+      }
+     }
+
+     http.end();
   
-  if (!client.connect(server_address, server_port)) {
-
-    #if DEBUG == 1
-     Serial.println("connection failed");
-    #endif
-    
-    return;
-  }
-
-  client.print("POST " + String(server_url) + " HTTP/1.1\r\n" +
-               "Content-Type: application/x-www-form-urlencoded\r\n" +
-               "Host: " + server_address +":" + server_port + "\r\n" + 
-               "Connection: close\r\n" +
-               "Content-Length:" + msg.length() + "\r\n" +
-               "Connection: close\r\n" +
-               "\r\n" + 
-                msg + "\r\n\r\n");
   
-
   
-  // Send the response to the client
-
-  delay(1);
-  client.stop();
-
-  #if DEBUG == 1
-   Serial.println("connection sucessfull");
-  #endif
+  
   }
     
    
