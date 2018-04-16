@@ -1,4 +1,4 @@
-/* 2018-04-12
+/* 2018-04-16
  * Danilo Queiroz Barbosa
  * electronicdrops.com member
  * 
@@ -6,9 +6,10 @@
  * Was designed to be used together a ESP8266. The data is send to esp8266 throught serial
  * and ESP8266 relay the data to a server.
  * 
- * This first part send a HTTP POST/GET data.
+ * This first part send a JSON data.
  */
 #include <TimedTask.h>
+#include <ArduinoJson.h>
 
 
 
@@ -66,8 +67,31 @@ void readdata(){
 
 void senddata(){
 
-sprintf(msg, "A0=%d&A1=%d&A2=%d&A3=%d&A4=%d&A5=%d&D2=%d&D3=%d&D4=%d&D5=%d&D8=%d&D9=%d&D10=%d&D11=%d&D12=%d&D13=%d"
-,a0,a1,a2,a3,a4,a5,d2,d3,d4,d5,d8,d9,d10,d11,d12,d13);
+StaticJsonBuffer<200> jsonBuffer;
+JsonObject& root = jsonBuffer.createObject();
+JsonArray& analog = root.createNestedArray("analog");
+JsonArray& digital = root.createNestedArray("digital");
+
+analog.add(a0);
+analog.add(a1);
+analog.add(a2);
+analog.add(a3);
+analog.add(a4);
+analog.add(a5);
+
+digital.add(d2);
+digital.add(d3);
+digital.add(d4);
+digital.add(d5);
+digital.add(d8);
+digital.add(d9);
+digital.add(d10);
+digital.add(d11);
+digital.add(d12);
+digital.add(d13);
+
+root.printTo(msg,200);
+
 
 SERIAL.println(msg);
   

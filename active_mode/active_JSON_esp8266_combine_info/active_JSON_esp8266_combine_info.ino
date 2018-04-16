@@ -12,6 +12,7 @@
 
 #include <WiFiManager.h>
 #include <ESP8266HTTPClient.h>
+#include <ArduinoJson.h>
  
 
 #define DEBUG  1
@@ -19,6 +20,37 @@
 const char * server_address = "192.168.0.106";
 const int    server_port    = 2121;
 const char * server_uri     = "/monitor";
+
+String device_ip;
+String device_mac;
+String device_name;
+
+
+// function from https://github.com/esp8266/Arduino/issues/313
+String getMacAddress(){
+   
+  byte mac[6]; 
+  byte mac_reversed[6]; 
+  
+  WiFi.macAddress(mac); 
+  
+  for(int idx = 0; idx<6; idx++){ 
+    mac_reversed[idx] = mac[6-idx]; 
+  } 
+    
+  String cMac = ""; 
+  for (int i = 0; i < 6; ++i){ 
+   
+    if (mac_reversed[i] < 0x10){ 
+        cMac += "0";
+    }         
+    cMac += String(mac_reversed[i],HEX); 
+    if(i < 5) 
+      cMac += ":";  // put : or - if you want byte delimiters 
+  } 
+  cMac.toUpperCase(); 
+  return cMac; 
+}
 
 
 void setup() {
@@ -46,6 +78,11 @@ void setup() {
 
     
     //if you get here you have connected to the WiFi
+
+    device_ip = WiFi.localIP().toString();
+    device_mac = getMacAddress();
+    device_name = "sensor_test";
+    
 
     #if DEBUG == 1
      Serial.print ( "IP address: " );
@@ -79,6 +116,21 @@ void loop() {
      delay(2);
   }
 
+
+
+  /*
+   * MOUNTING JSON
+   * 
+   */
+
+  StaticJsonBuffer<200> jsonBuffer;
+  JsonObject& root = jsonBuffer.createObject();
+  JsonObject& device = root.createNestedObject("device");
+  JsonObject& values = root.createNestedObject("values");
+
+   device["name"]= device_name;
+   device["ip"]  = device_ip;
+   device["mac"] = device_mac;
   
 
   /*
