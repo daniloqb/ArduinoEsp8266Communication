@@ -69,8 +69,9 @@ void senddata(){
 
 StaticJsonBuffer<200> jsonBuffer;
 JsonObject& root = jsonBuffer.createObject();
-JsonArray& analog = root.createNestedArray("analog");
-JsonArray& digital = root.createNestedArray("digital");
+JsonObject& values = root.createNestedObject("values");
+JsonArray& analog = values.createNestedArray("analog");
+JsonArray& digital = values.createNestedArray("digital");
 
 analog.add(a0);
 analog.add(a1);

@@ -1,9 +1,10 @@
 
-/* 2018-04-15
+/* 2018-04-17
  * Danilo Queiroz Barbosa
  * electronicdrops.com member
  * 
- * This sketch is a simple example how to send data via POST or GET html variables.
+ * This sketch is a simple example how to send data via JSON
+ * This sketch version sends esp8266 data combined the data arrived from Serial.
  * 
  * The data came from Serial and esp8266 relays the data to the server. The response is send back to Serial.
  * 
@@ -20,6 +21,7 @@
 const char * server_address = "192.168.0.106";
 const int    server_port    = 2121;
 const char * server_uri     = "/monitor";
+
 
 String device_ip;
 String device_mac;
@@ -51,6 +53,15 @@ String getMacAddress(){
   cMac.toUpperCase(); 
   return cMac; 
 }
+
+
+//https://arduinojson.org/doc/tricks/
+void merge(JsonObject& dest, const JsonObject& src) {
+   for (auto kvp : src) {
+     dest[kvp.key] = kvp.value;
+   }
+}
+
 
 
 void setup() {
@@ -96,7 +107,7 @@ void loop() {
   char c;
   String msg;
   HTTPClient http;
-
+  String json_info;
 
 /*
  *  PARTE 01 - VERIFICA SE EXISTEM DADOS A SEREM ENVIADOS
@@ -123,23 +134,32 @@ void loop() {
    * 
    */
 
-  StaticJsonBuffer<200> jsonBuffer;
+  StaticJsonBuffer<500> jsonBuffer;
   JsonObject& root = jsonBuffer.createObject();
   JsonObject& device = root.createNestedObject("device");
-  JsonObject& values = root.createNestedObject("values");
-
+// //  values = root.createNestedObject("values");
+//
    device["name"]= device_name;
    device["ip"]  = device_ip;
    device["mac"] = device_mac;
+
+//   root.printTo(json_info);
+
+    JsonObject& values = jsonBuffer.parseObject(msg);
+
+    merge(root,values);
+
+   root.printTo(json_info);
+
   
 
-  /*
-   * PARTE 03 - CRIA CONEXAO COM O SERVIDOR
-   */
-
+//  /*
+//   * PARTE 03 - CRIA CONEXAO COM O SERVIDOR
+//   */
+//
      http.begin(server_address, server_port, server_uri);
      http.addHeader("Content-Type","application/json");
-     int httpCode = http.POST(msg);
+     int httpCode = http.POST(json_info);
 
 
      if(httpCode > 0) {
