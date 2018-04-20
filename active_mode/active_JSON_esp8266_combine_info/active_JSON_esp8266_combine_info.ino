@@ -20,7 +20,7 @@
 
 const char * server_address = "192.168.0.106";
 const int    server_port    = 2121;
-const char * server_uri     = "/monitor";
+const char * server_uri     = "/receive.php";
 
 
 String device_ip;
@@ -161,7 +161,7 @@ void loop() {
      http.addHeader("Content-Type","application/json");
      int httpCode = http.POST(json_info);
 
-
+      Serial.println(httpCode);
      if(httpCode > 0) {
       if(httpCode == HTTP_CODE_OK) {
         String payload = http.getString();
