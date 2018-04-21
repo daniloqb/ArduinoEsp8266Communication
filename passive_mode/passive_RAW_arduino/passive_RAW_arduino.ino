@@ -18,7 +18,7 @@
 
 #endif
 
-const int MAX_BUFFER = 200;
+const int MAX_BUFFER = 15;
 
 char buff[MAX_BUFFER];
 
@@ -36,6 +36,7 @@ void setup() {
 void loop() {
   int index = 0;
   char c;
+  int value;
   
  /*
  * PART 01 -- RECEIVING DATA
@@ -43,23 +44,30 @@ void loop() {
 
   if (SERIAL.available() > 0) {
 
-    for (int i = 0; i < MAX_BUFFER; i++) {
-       buff[i] = '\0';
-    }
-
     while (SERIAL.available()) {
       c = SERIAL.read();
 
- 
-      delay(1);
-      if ((c != '\r' && c != '\n') && index < MAX_BUFFER) {
+   delay(1);
+     if ((c != '\r' && c!= '\n') && index < MAX_BUFFER) {
          buff[index++] = c;
+      } 
+
+
+
+      if (c == '\n' && index > 0){
+        value = atoi(buff);
+        Serial.println(value);
+        index = 0;
+
+       for (int i = 0; i < MAX_BUFFER; i++) {
+       buff[i] = '\0';
+    }
       }
 
     }
 
     #if DEBUG == 1
-      Serial.println(buff);
+     Serial.println(buff);
     #endif
   }
 }
