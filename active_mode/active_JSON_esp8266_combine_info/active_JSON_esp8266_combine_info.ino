@@ -23,9 +23,9 @@ const int    server_port    = 2121;
 const char * server_uri     = "/receive.php";
 
 
-String device_ip;
-String device_mac;
-String device_name;
+String host_ip;
+String host_mac;
+String host_name;
 
 
 // function from https://github.com/esp8266/Arduino/issues/313
@@ -90,9 +90,9 @@ void setup() {
     
     //if you get here you have connected to the WiFi
 
-    device_ip = WiFi.localIP().toString();
-    device_mac = getMacAddress();
-    device_name = "sensor_test";
+    host_ip = WiFi.localIP().toString();
+    host_mac = getMacAddress();
+    host_name = "sensor_test";
     
 
     #if DEBUG == 1
@@ -136,12 +136,12 @@ void loop() {
 
   StaticJsonBuffer<500> jsonBuffer;
   JsonObject& root = jsonBuffer.createObject();
-  JsonObject& device = root.createNestedObject("device");
+  JsonObject& host = root.createNestedObject("host");
 // //  values = root.createNestedObject("values");
 //
-   device["name"]= device_name;
-   device["ip"]  = device_ip;
-   device["mac"] = device_mac;
+   host["name"]= host_name;
+   host["ip"]  = host_ip;
+   host["mac"] = host_mac;
 
 //   root.printTo(json_info);
 
