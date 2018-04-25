@@ -1,12 +1,9 @@
-/* 2018-04-12
+/* 2018-04-25
  * Danilo Queiroz Barbosa
+ * daniloqb@electronicdrops.com
  * electronicdrops.com member
  * 
- * This sketch is a simple example how to send data over a period of time throught serial
- * Was designed to be used together a ESP8266. The data is send to esp82 throught serial
- * and ESP8266 relay the data to a server.
- * 
- * This first part send a raw data.
+ * This sketch is a example of sending raw temperature data over wifi using arduino-esp8266-lm35
  */
 
 
@@ -34,11 +31,16 @@
 #endif
 
 const int MAX_BUFFER = 200;
-
 char buff[MAX_BUFFER];
 
-int val = 0;
 
+/*
+ * DECLARING SENSOR OBJECT
+ */
+
+ #include "TemperatureSensors.h"
+ 
+TemperatureSensorLM35 sensor = TemperatureSensorLM35(A0);
 
 
 void setup() {
@@ -49,6 +51,9 @@ void setup() {
     Serial.begin(BAUNDRATE);
     Serial.println("Initializing");
   #endif
+
+  sensor.begin(); //initializing sensor
+  
 }
 
 void loop() {  
@@ -57,7 +62,7 @@ void loop() {
 
 
 /*
- * PARTE 01 -- RECEBENDO DADOS DA SOFTSERIAL
+ * PART 01 -- RECEIVING DATA FROM SERIAL
  */
 
   if (SERIAL.available() > 0) {
@@ -83,12 +88,17 @@ void loop() {
     #endif
   }
 
+  
+
 
 /*
- *  PARTE 02 -- EXECUTANDO OPERACOES
+ *  PART 02 -- GETTING DATA FROM SENSOR
+ *  
  */
 
- val = analogRead(A0);
+ sensor.update(); // update the values
+
+ float temperature = sensor.getTemperature();
  
 
  /*
@@ -96,11 +106,11 @@ void loop() {
   */
 
 
-  SERIAL.println(val);
+  SERIAL.println(temperature);
 
   #if DEBUG == 1
     Serial.print("Sending:");
-    Serial.println(val);  
+    Serial.println(temperature);  
   #endif
   /*
    *  PART04 -- DELAY DE EXECUCAO
