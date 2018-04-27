@@ -64,13 +64,8 @@ JsonObject& device_lm35 = devices.createNestedObject();
 device_lm35["id"] = DEVICE_ID;
 device_lm35["name"] = DEVICE_NAME;
 
-
-JsonArray&  values     = root.createNestedArray("values");
-JsonObject& lm35_value = values.createNestedObject();
-
-lm35_value["id"] = DEVICE_ID;
-lm35_value["temperature"] = sensor.getTemperature();
-
+JsonObject& values = device_lm35.createNestedObject("values");
+values["temperature"] = sensor.getTemperature();
 
 
 root.printTo(msg,200);
