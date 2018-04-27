@@ -18,7 +18,7 @@
 
 #define DEBUG  1
 
-const char * server_address = "192.168.43.56";
+const char * server_address = "192.168.0.106";
 const int    server_port    = 2121;
 const char * server_uri     = "/receive.php";
 
